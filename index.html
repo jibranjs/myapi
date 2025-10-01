@@ -1,11 +1,93 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>API Data</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        caption {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    
+
+<p id="demo">Fetching data from the API...</p>
+
+<div id="output">
+    <!-- The tables will be added here by JavaScript -->
+</div>
+
+<script>
+    const apiUrl = 'https://panlogical-presemilunar-beulah.ngrok-free.dev/status';
+
+    const postData = {
+      name: 'Jibran',
+      naseats: 120,
+      pkseats: 110,
+      resseats: 90
+    };
+
+    fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      origin: window.location.origin,
+      body: JSON.stringify(postData),
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Success:', data);
+        document.getElementById("demo").textContent = "Data fetched successfully!";
+
+        const outputDiv = document.getElementById('output');
+
+        // Create and add the first table for party_details
+        let table1Html = '<table><caption>Party Details</caption><tr><th>Key</th><th>Value</th></tr>';
+        for (const key in data.party_details) {
+            table1Html += `<tr><td>${key}</td><td>${data.party_details[key]}</td></tr>`;
+        }
+        table1Html += '</table>';
+        outputDiv.innerHTML = table1Html;
+
+        // Create and add the second table for totals
+        let table2Html = '<table><caption>Totals</caption><tr><th>Key</th><th>Value</th></tr>';
+        for (const key in data.totals) {
+            table2Html += `<tr><td>${key}</td><td>${data.totals[key]}</td></tr>`;
+        }
+        table2Html += '</table>';
+        outputDiv.innerHTML += table2Html;
+
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        // This is where your code was failing. The `demo` element might
+        // not exist if the script runs too early.
+        const demoElement = document.getElementById("demo");
+        if (demoElement) {
+            demoElement.textContent = `Error: ${error.message}`;
+        }
+      });
+</script>
+
 </body>
 </html>
